@@ -59,11 +59,27 @@ int num_1[] = {HIGH, LOW, LOW, HIGH, HIGH, HIGH, HIGH, HIGH};
 int num_2[] = {LOW, LOW, HIGH, LOW, LOW, HIGH, LOW, HIGH};
 int num_3[] = {LOW, LOW, LOW, LOW, HIGH, HIGH, LOW, HIGH};
 int num_4[] = {HIGH, LOW, LOW, HIGH, HIGH, LOW, LOW, HIGH};
-int num_5[] = {LOW, HIGH, HIGH, LOW, LOW, LOW, LOW, HIGH};
-int num_6[] = {LOW, HIGH, HIGH, LOW, LOW, LOW, LOW, HIGH};
+int num_5[] = {LOW, HIGH, LOW, LOW, HIGH, LOW, LOW, HIGH};
+int num_6[] = {LOW, HIGH, LOW, LOW, LOW, LOW, LOW, HIGH};
 int num_7[] = {LOW, LOW, LOW, HIGH, HIGH, HIGH, HIGH, HIGH};
 int num_8[] = {LOW, LOW, LOW, LOW, LOW, LOW, LOW, HIGH};
 int num_9[] = {LOW, LOW, LOW, LOW, HIGH, LOW, LOW, HIGH};
+int empty[] = {HIGH, HIGH, HIGH, HIGH, HIGH, HIGH, HIGH, HIGH};
+int y[] = {HIGH, LOW, LOW, LOW, HIGH, LOW, LOW, HIGH};
+int b[] = {HIGH, HIGH, LOW, LOW, LOW, LOW, LOW, HIGH};
+int n[] = {LOW, LOW, LOW, HIGH, LOW, LOW, HIGH, HIGH};
+int u[] = {HIGH, LOW, LOW, LOW, LOW, LOW, HIGH, HIGH};
+int *s = num_5;
+int j[] = {HIGH, LOW, LOW, LOW, HIGH, HIGH, HIGH, HIGH};
+int *g = num_9;
+int t[] = {HIGH, HIGH, HIGH, LOW, LOW, LOW, LOW, HIGH};
+int d[] = {HIGH, LOW, LOW, LOW, LOW, HIGH, LOW, HIGH};
+int *i = num_1;
+int *k = X;
+int r[] = {LOW, HIGH, HIGH, HIGH, LOW, LOW, HIGH, HIGH};
+// 
+int strips[] = {HIGH, HIGH, HIGH, HIGH, HIGH, HIGH, LOW, HIGH};
+
 
 
 void setupRunning4x(){
@@ -125,9 +141,65 @@ void show(int numDisp, int *chars, bool hasDotted = false) {
   //delay(1);
 }
 
-void animationWords4(int **displayWords){
-  int sizePins = sizeof(definedPins) / sizeof(int);
-  int sizeWords = sizeof(displayWords) / (sizePins * sizeof(int));
+int length2Dimens(void **arrs) {
+  int len = 0;
+  while(arrs[len] != NULL){
+    len++;
+  }
+  return len;
+}
+
+void animateFromLeft4(int **displays, int countWords, int durationBetweenWords = 512) {
+  durationBetweenWords*=2;
+  int startStrips = 1;
+  int endStrips = 4;
+  int startWordArrs = -1;
+  int endWordArrs = -1;
+  int startDisplayWords = 0;
+  int endDisplayWords = 0;
+
+  bool isReversed = false;
+  while(true){
+    clearLEDS();
+    clearDisp();
+    for(int d = 0; d < durationBetweenWords; d++){
+      if(startStrips > 0 && endStrips <= 4){
+        for(int x = startStrips; x <= endStrips; x++){
+          show(x, strips);
+        }
+      }
+
+      if(startWordArrs >= 0 && endWordArrs < countWords && startDisplayWords > 0 && endDisplayWords <= 4){
+        for(int x = startDisplayWords, y = startWordArrs; x <= endDisplayWords && y <= endWordArrs; x++, y++){
+          show(x, displays[y]);
+        }
+      }
+      delayMicroseconds(1);
+    }
+
+    endWordArrs = (endWordArrs < countWords - 1) ? endWordArrs + 1: endWordArrs;
+    if(!isReversed) {
+
+      endStrips = (endStrips == 0 ) ? 0 : endStrips - 1;
+      startStrips = (endStrips == 0) ? 0 : startStrips;
+      startWordArrs = (startDisplayWords != 1) ? 0 : startWordArrs + 1;
+      startDisplayWords = endStrips + 1;
+      endDisplayWords = startDisplayWords + (endWordArrs - startWordArrs);
+      
+      isReversed = (((endWordArrs+1) - (startWordArrs+1)) < 4 && endWordArrs + 1 == countWords) ;
+    } else {
+      if(endDisplayWords - 1 < 1) break;
+      startDisplayWords = 1;
+      startWordArrs = (startWordArrs < countWords - 1) ? startWordArrs + 1: startWordArrs;
+      endStrips = 4;
+      startStrips = (endWordArrs - startWordArrs) + 2;
+      endDisplayWords = startStrips - 1;
+    }
+    
+  }
+}
+
+void animationWords4(int **displayWords, int sizeWords = 4){
   if(sizeWords > 4) return;
   int delayBetweenWords = 1000;
   delay (1500);
