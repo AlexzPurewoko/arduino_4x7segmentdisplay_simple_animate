@@ -116,7 +116,7 @@ void disp(int *pinArr, bool hasDotted) {
   for(int x = 0; x < sizeArr; x++){
     digitalWrite(definedPins[x], pinArr[x]);
   }
-  if(hasDotted) digitalWrite(definedPins[sizeArr - 1], HIGH);
+  if(hasDotted) digitalWrite(definedPins[sizeArr - 1], LOW);
 }
 void show(int numDisp, int *chars, bool hasDotted = false) {
   clearLEDS();
